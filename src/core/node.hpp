@@ -10,13 +10,13 @@
 
 namespace bonobo
 {
-	struct mesh_data;
+struct mesh_data;
 }
 
 //! \brief Represents a node of a scene graph
 class Node
 {
-public:
+  public:
 	//! \brief Default constructor.
 	Node();
 
@@ -25,7 +25,7 @@ public:
 	//! @param [in] WVP Matrix transforming from world-space to clip-space
 	//! @param [in] world Matrix transforming from model-space to
 	//!             world-space
-	void render(glm::mat4 const& WVP, glm::mat4 const& world) const;
+	virtual void render(glm::mat4 const &WVP, glm::mat4 const &world) const;
 
 	//! \brief Render this node with a specific shader program.
 	//!
@@ -36,9 +36,15 @@ public:
 	//! @param [in] set_uniforms function that will take as argument an
 	//!             OpenGL shader program, and will setup that program's
 	//!             uniforms
-	void render(glm::mat4 const& WVP, glm::mat4 const& world,
-	            GLuint program,
-	            std::function<void (GLuint)> const& set_uniforms) const;
+	virtual void render(glm::mat4 const &WVP, glm::mat4 const &world,
+						GLuint program,
+						std::function<void(GLuint)> const &set_uniforms) const;
+
+	void renderInstanced(glm::mat4 const &WVP, glm::mat4 const &world,
+						 const std::vector<glm::mat4> &instances) const;
+	void renderInstanced(glm::mat4 const &WVP, glm::mat4 const &world,
+						 const std::vector<glm::mat4> &instances,
+						 GLuint program, std::function<void(GLuint)> const &set_uniforms) const;
 
 	//! \brief Set the geometry of this node.
 	//!
@@ -46,7 +52,7 @@ public:
 	//! children will be rendered if they have any geometry.
 	//!
 	//! @param [in] shape OpenGL data to use as geometry
-	void set_geometry(bonobo::mesh_data const& shape);
+	void set_geometry(bonobo::mesh_data const &shape);
 
 	//! \brief Get the number of indices to use.
 	//!
@@ -56,7 +62,7 @@ public:
 	//! \brief Set the number of indices to use.
 	//!
 	//! @param [in] indices_nb how many indices to use when rendering
-	void set_indices_nb(size_t const& indices_nb);
+	void set_indices_nb(size_t const &indices_nb);
 
 	//! \brief Set the program of this node.
 	//!
@@ -68,7 +74,7 @@ public:
 	//! @param [in] set_uniforms function that will take as argument an
 	//!             OpenGL shader program, and will setup that program's
 	//!             uniforms
-	void set_program(GLuint const* const program, std::function<void (GLuint)> const& set_uniforms);
+	void set_program(GLuint const *const program, std::function<void(GLuint)> const &set_uniforms);
 
 	//! \brief Add a texture to this node.
 	//!
@@ -78,13 +84,13 @@ public:
 	//! @param [in] tex_id the name of an OpenGL 2D-texture
 	//! @param [in] type the type of texture, i.e. GL_TEXTURE_2D,
 	//!                  GL_TEXTURE_CUBE_MAP, etc.
-	void add_texture(std::string const& name, GLuint tex_id, GLenum type);
+	void add_texture(std::string const &name, GLuint tex_id, GLenum type);
 
 	//! \brief Add a child to this node.
 	//!
 	//! @param [in] child pointer to the child to add; the pointer has to
 	//!             be non-null
-	void add_child(Node const* child);
+	void add_child(Node const *child);
 
 	//! \brief Return the number of children to this node.
 	//!
@@ -96,18 +102,18 @@ public:
 	//! @param [in] index the index of the child to return; index should be
 	//!             strictly less than the number of children
 	//! @return a pointer to the desired child
-	Node const* get_child(size_t index) const;
+	Node const *get_child(size_t index) const;
 
 	//! \brief Reset the translation to a new value.
 	//!
 	//! @param [in] translation new translation vector
-	void set_translation(glm::vec3 const& translation);
+	void set_translation(glm::vec3 const &translation);
 
 	//! \brief Translate this node.
 	//!
 	//! @param [in] v translation vector to be added to the node's
 	//!               current translation
-	void translate(glm::vec3 const& v);
+	void translate(glm::vec3 const &v);
 
 	//! \brief Reset the rotation along the x-axis to a new value.
 	//!
@@ -152,13 +158,13 @@ public:
 	//!
 	//! @param [in] scaling new scaling vector: `(x_scaling, y_scaling,
 	//!                     z_scaling)`
-	void set_scaling(glm::vec3 const& scaling);
+	void set_scaling(glm::vec3 const &scaling);
 
 	//! \brief Scale this node.
 	//!
 	//! @param [in] s scaling vector to be composed with the node's
 	//!               current scaling value
-	void scale(glm::vec3 const& s);
+	void scale(glm::vec3 const &s);
 
 	//! \brief Return this node transformation matrix.
 	//!
@@ -166,7 +172,9 @@ public:
 	//!         transformations; this is the model matrix of this node
 	glm::mat4x4 get_transform() const;
 
-private:
+	void do_a_barrel_roll();
+
+  protected:
 	// Geometry data
 	GLuint _vao;
 	GLsizei _vertices_nb;
@@ -175,8 +183,8 @@ private:
 	bool _has_indices;
 
 	// Program data
-	GLuint const* _program;
-	std::function<void (GLuint)> _set_uniforms;
+	GLuint const *_program;
+	std::function<void(GLuint)> _set_uniforms;
 
 	// Textures data
 	std::vector<std::tuple<std::string, GLuint, GLenum>> _textures;
@@ -187,5 +195,5 @@ private:
 	glm::vec3 _translation;
 
 	// Children data
-	std::vector<Node const*> _children;
+	std::vector<Node const *> _children;
 };

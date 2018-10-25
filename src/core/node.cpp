@@ -10,15 +10,13 @@ Node::Node() : _vao(0u), _vertices_nb(0u), _indices_nb(0u), _drawing_mode(GL_TRI
 {
 }
 
-void
-Node::render(glm::mat4 const& WVP, glm::mat4 const& world) const
+void Node::render(glm::mat4 const &WVP, glm::mat4 const &world) const
 {
 	if (_program != nullptr)
 		render(WVP, world, *_program, _set_uniforms);
 }
 
-void
-Node::render(glm::mat4 const& WVP, glm::mat4 const& world, GLuint program, std::function<void (GLuint)> const& set_uniforms) const
+void Node::render(glm::mat4 const &WVP, glm::mat4 const &world, GLuint program, std::function<void(GLuint)> const &set_uniforms) const
 {
 	if (_vao == 0u || program == 0u)
 		return;
@@ -33,8 +31,9 @@ Node::render(glm::mat4 const& WVP, glm::mat4 const& world, GLuint program, std::
 	glUniformMatrix4fv(glGetUniformLocation(program, "normal_model_to_world"), 1, GL_FALSE, glm::value_ptr(normal_model_to_world));
 	glUniformMatrix4fv(glGetUniformLocation(program, "vertex_world_to_clip"), 1, GL_FALSE, glm::value_ptr(WVP));
 
-	for (size_t i = 0u; i < _textures.size(); ++i) {
-		auto const& texture = _textures[i];
+	for (size_t i = 0u; i < _textures.size(); ++i)
+	{
+		auto const &texture = _textures[i];
 		glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(i));
 		glBindTexture(std::get<2>(texture), std::get<1>(texture));
 		glUniform1i(glGetUniformLocation(program, std::get<0>(texture).c_str()), static_cast<GLint>(i));
@@ -45,12 +44,13 @@ Node::render(glm::mat4 const& WVP, glm::mat4 const& world, GLuint program, std::
 
 	glBindVertexArray(_vao);
 	if (_has_indices)
-		glDrawElements(_drawing_mode, _indices_nb, GL_UNSIGNED_INT, reinterpret_cast<GLvoid const*>(0x0));
+		glDrawElements(_drawing_mode, _indices_nb, GL_UNSIGNED_INT, reinterpret_cast<GLvoid const *>(0x0));
 	else
 		glDrawArrays(_drawing_mode, 0, _vertices_nb);
 	glBindVertexArray(0u);
 
-	for (auto const& texture : _textures) {
+	for (auto const &texture : _textures)
+	{
 		glBindTexture(std::get<2>(texture), 0);
 		glUniform1i(glGetUniformLocation(program, std::get<0>(texture).c_str()), 0);
 
@@ -61,8 +61,7 @@ Node::render(glm::mat4 const& WVP, glm::mat4 const& world, GLuint program, std::
 	glUseProgram(0u);
 }
 
-void
-Node::set_geometry(bonobo::mesh_data const& shape)
+void Node::set_geometry(bonobo::mesh_data const &shape)
 {
 	_vao = shape.vao;
 	_vertices_nb = static_cast<GLsizei>(shape.vertices_nb);
@@ -70,14 +69,14 @@ Node::set_geometry(bonobo::mesh_data const& shape)
 	_drawing_mode = shape.drawing_mode;
 	_has_indices = shape.ibo != 0u;
 
-	if (!shape.bindings.empty()) {
-		for (auto const& binding : shape.bindings)
+	if (!shape.bindings.empty())
+	{
+		for (auto const &binding : shape.bindings)
 			add_texture(binding.first, binding.second, GL_TEXTURE_2D);
 	}
 }
 
-void
-Node::set_program(GLuint const* const program, std::function<void (GLuint)> const& set_uniforms)
+void Node::set_program(GLuint const *const program, std::function<void(GLuint)> const &set_uniforms)
 {
 	if (program == nullptr)
 		throw std::runtime_error("Node::set_program: program can not be null.");
@@ -92,21 +91,18 @@ Node::get_indices_nb() const
 	return static_cast<size_t>(_indices_nb);
 }
 
-void
-Node::set_indices_nb(size_t const& indices_nb)
+void Node::set_indices_nb(size_t const &indices_nb)
 {
 	_indices_nb = static_cast<GLsizei>(indices_nb);
 }
 
-void
-Node::add_texture(std::string const& name, GLuint tex_id, GLenum type)
+void Node::add_texture(std::string const &name, GLuint tex_id, GLenum type)
 {
 	if (tex_id != 0u)
 		_textures.emplace_back(name, tex_id, type);
 }
 
-void
-Node::add_child(Node const* child)
+void Node::add_child(Node const *child)
 {
 	if (child == nullptr)
 		LogError("Trying to add a nullptr as child!");
@@ -119,33 +115,29 @@ Node::get_children_nb() const
 	return _children.size();
 }
 
-Node const*
+Node const *
 Node::get_child(size_t index) const
 {
 	assert(index < _children.size());
 	return _children[index];
 }
 
-void
-Node::set_translation(glm::vec3 const& translation)
+void Node::set_translation(glm::vec3 const &translation)
 {
 	_translation = translation;
 }
 
-void
-Node::translate(glm::vec3 const& v)
+void Node::translate(glm::vec3 const &v)
 {
 	_translation += v;
 }
 
-void
-Node::set_scaling(glm::vec3 const& scaling)
+void Node::set_scaling(glm::vec3 const &scaling)
 {
 	_scaling = scaling;
 }
 
-void
-Node::scale(glm::vec3 const& s)
+void Node::scale(glm::vec3 const &s)
 {
 	_scaling *= s;
 }
@@ -153,7 +145,7 @@ Node::scale(glm::vec3 const& s)
 glm::mat4x4
 Node::get_transform() const
 {
-	auto const scaling =  glm::scale(glm::mat4(1.0f), _scaling);
+	auto const scaling = glm::scale(glm::mat4(1.0f), _scaling);
 	auto const translating = glm::translate(glm::mat4(1.0f), _translation);
 	auto const rotation_x = glm::rotate(glm::mat4(1.0f), _rotation.x, glm::vec3(1.0, 0.0, 0.0));
 	auto const rotation_y = glm::rotate(glm::mat4(1.0f), _rotation.y, glm::vec3(0.0, 1.0, 0.0));
@@ -161,4 +153,68 @@ Node::get_transform() const
 	auto const rotating = rotation_z * rotation_y * rotation_x;
 
 	return translating * rotating * scaling;
+}
+
+void Node::do_a_barrel_roll()
+{
+	auto last = _textures.back();
+	_textures.pop_back();
+	_textures.insert(_textures.begin(), last);
+}
+
+void Node::renderInstanced(glm::mat4 const &WVP, glm::mat4 const &world, const std::vector<glm::mat4> &worlds) const
+{
+	if (_program != nullptr)
+		renderInstanced(WVP, world, worlds, *_program, _set_uniforms);
+}
+
+void Node::renderInstanced(glm::mat4 const &WVP, glm::mat4 const &world, const std::vector<glm::mat4> &instances,
+						   GLuint program, std::function<void(GLuint)> const &set_uniforms) const
+{
+	if (_vao == 0u || program == 0u)
+		return;
+
+	glUseProgram(program);
+
+	const size_t N = instances.size();
+
+	std::vector<glm::mat4> vertex_model_to_world(N);
+	for (size_t i = 0; i < instances.size(); ++i)
+	{
+		vertex_model_to_world[i] = world * instances[i];
+	}
+
+	set_uniforms(program);
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "vertex_model_to_world"), N, GL_FALSE, glm::value_ptr(vertex_model_to_world[0]));
+	glUniformMatrix4fv(glGetUniformLocation(program, "vertex_world_to_clip"), 1, GL_FALSE, glm::value_ptr(WVP));
+
+	for (size_t i = 0u; i < _textures.size(); ++i)
+	{
+		auto const &texture = _textures[i];
+		glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(i));
+		glBindTexture(std::get<2>(texture), std::get<1>(texture));
+		glUniform1i(glGetUniformLocation(program, std::get<0>(texture).c_str()), static_cast<GLint>(i));
+
+		std::string texture_presence_var_name = "has_" + std::get<0>(texture);
+		glUniform1i(glGetUniformLocation(program, texture_presence_var_name.c_str()), 1);
+	}
+
+	glBindVertexArray(_vao);
+	if (_has_indices)
+		glDrawElementsInstanced(_drawing_mode, _indices_nb, GL_UNSIGNED_INT, reinterpret_cast<GLvoid const *>(0x0), N);
+	else
+		glDrawArraysInstanced(_drawing_mode, 0, _vertices_nb, N);
+	glBindVertexArray(0u);
+
+	for (auto const &texture : _textures)
+	{
+		glBindTexture(std::get<2>(texture), 0);
+		glUniform1i(glGetUniformLocation(program, std::get<0>(texture).c_str()), 0);
+
+		std::string texture_presence_var_name = "has_" + std::get<0>(texture);
+		glUniform1i(glGetUniformLocation(program, texture_presence_var_name.c_str()), 0);
+	}
+
+	glUseProgram(0u);
 }

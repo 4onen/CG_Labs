@@ -63,7 +63,8 @@ include (CMake/InstallImGui.cmake)
 find_package (imgui ${LUGGCGL_IMGUI_MIN_VERSION} REQUIRED)
 
 # TinyFileDialogs is used for displaying error popups.
-include (CMake/InstallTinyFileDialogs.cmake)
+# include (CMake/InstallTinyFileDialogs.cmake)
+#... Except MacOS Mojave broke it.
 
 # Resources are found in an external archive
 include (CMake/RetrieveResourceArchive.cmake)
@@ -124,7 +125,8 @@ function (luggcgl_new_assignment assignment_name sources common_sources)
 
 	add_dependencies (${assignment_name} bonobo)
 
-	target_link_libraries (${assignment_name} bonobo imgui::imgui glm tinyfiledialogs::tinyfiledialogs)
+	# Removed tinyfiledialogs::tinyfiledialogs from end of line, before parenthesis
+	target_link_libraries (${assignment_name} bonobo imgui::imgui glm)
 
 	install (TARGETS ${assignment_name} DESTINATION bin)
 endfunction ()

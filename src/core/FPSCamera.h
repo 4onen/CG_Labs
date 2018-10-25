@@ -9,14 +9,14 @@
 
 #include <iostream>
 
-template<typename T, glm::precision P>
+template <typename T, glm::precision P>
 class FPSCamera
 {
-public:
+  public:
 	FPSCamera(T fovy, T aspect, T nnear, T nfar);
 	~FPSCamera();
 
-public:
+  public:
 	void Update(double dt, InputHandler &ih, bool ignoreKeyEvents = false, bool ignoreMouseEvents = false);
 	void SetProjection(T fovy, T aspect, T nnear, T nfar);
 	void SetFov(T fovy);
@@ -24,37 +24,39 @@ public:
 	void SetAspect(T a);
 	T GetAspect();
 
-	glm::tmat4x4<T, P> GetViewToWorldMatrix();
-	glm::tmat4x4<T, P> GetWorldToViewMatrix();
-	glm::tmat4x4<T, P> GetClipToWorldMatrix();
-	glm::tmat4x4<T, P> GetWorldToClipMatrix();
-	glm::tmat4x4<T, P> GetClipToViewMatrix();
-	glm::tmat4x4<T, P> GetViewToClipMatrix();
+	glm::tmat4x4<T, P> GetViewToWorldMatrix() const;
+	glm::tmat4x4<T, P> GetWorldToViewMatrix() const;
+	glm::tmat4x4<T, P> GetClipToWorldMatrix() const;
+	glm::tmat4x4<T, P> GetWorldToClipMatrix() const;
+	glm::tmat4x4<T, P> GetClipToViewMatrix() const;
+	glm::tmat4x4<T, P> GetViewToClipMatrix() const;
 
-	glm::tvec3<T, P> GetClipToWorld(glm::tvec3<T, P> xyw);
-	glm::tvec3<T, P> GetClipToView(glm::tvec3<T, P> xyw);
+	glm::tvec3<T, P> GetClipToWorld(glm::tvec3<T, P> xyw) const;
+	glm::tvec3<T, P> GetClipToView(glm::tvec3<T, P> xyw) const;
 
-public:
+  public:
 	TRSTransform<T, P> mWorld;
 	T mMovementSpeed;
 	T mMouseSensitivity;
 
-public:
+  public:
 	T mFov, mAspect, mNear, mFar;
 	glm::tmat4x4<T, P> mProjection;
 	glm::tmat4x4<T, P> mProjectionInverse;
 	glm::tvec2<T, P> mRotation;
 	glm::tvec2<T, P> mMousePosition;
 
-public:
-	friend std::ostream &operator<<(std::ostream &os, FPSCamera<T, P> &v) {
+  public:
+	friend std::ostream &operator<<(std::ostream &os, FPSCamera<T, P> &v)
+	{
 		os << v.mFov << " " << v.mAspect << " " << v.mNear << " " << v.mFar << std::endl;
 		os << v.mMovementSpeed << " " << v.mMouseSensitivity << std::endl;
 		os << v.mRotation << std::endl;
 		os << v.mWorld;
 		return os;
 	}
-	friend std::istream &operator>>(std::istream &is, FPSCamera<T, P> &v) {
+	friend std::istream &operator>>(std::istream &is, FPSCamera<T, P> &v)
+	{
 		T fov, aspect, nnear, far;
 		is >> fov >> aspect >> nnear >> far;
 		v.SetProjection(fov, aspect, nnear, far);
