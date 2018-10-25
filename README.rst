@@ -1,3 +1,28 @@
+Hey kiddos! This repo is modified to remove compilation of TinyDialog and allow 
+compilation of all of my project solutions, in the _modified versions of the 
+files. Assignment 5 has been moved to its own folder, as I created a bunch of
+submodules that I wanted to compile in properly. The same is true for the 
+shaders in Assignment 5.
+
+Setup with CMake as with the regular CG_Labs instructions. I built this for
+MacOS Sierra 10.12.6 with the generator Unix Makefiles. I barely got it to
+work on MacOS Mojave 10.14 by removing TinyDialog. I have no idea if this
+works with Visual Studio on the lab computers.
+
+
+
+
+
+
+
+
+
+
+
+
+CG_Labs Description
+===================
+
 CG_Labs contains the source code for the various Computer Graphics courses
 taught at `Lund University`_ (EDAF80_ and EDAN35_). All assignments of EDAF80
 are available, as well as the second assignment of EDAN35.
